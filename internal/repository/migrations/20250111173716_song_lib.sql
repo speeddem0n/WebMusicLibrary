@@ -1,17 +1,16 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE song_lib 
-(
+CREATE TABLE song_lib (
     id SERIAL PRIMARY KEY,
     group_name VARCHAR(255) NOT NULL,
-    song VARCHAR(255) NOT NULL,
-    release_date TIMESTAMP NOT NULL,
+    song_name VARCHAR(255) NOT NULL,
+    release_date DATE NOT NULL,
     text TEXT NOT NULL,
-    link TEXT NOT NULL
+    link VARCHAR(512)
 );
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS song_lib;
+drop table is exists song_lib;
 -- +goose StatementEnd
