@@ -1,16 +1,16 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
-func (h *Handler) GetAllSongs(c *gin.Context) {
+func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")           // Параметр page, по умолчанию 1
 	pageSize := c.DefaultQuery("page_size", "10") // Параметр page_size, по умолчанию 10
 	group := c.DefaultQuery("group", "")          // Параметр group
@@ -62,8 +62,7 @@ func (h *Handler) GetAllSongs(c *gin.Context) {
 	// Получаем список песен с фильтрацией и пагинацией
 	songs, err := h.songs.GetAll(req)
 	if err != nil {
-		logrus.Errorf("Failed to  fetch song: %v", err)
-		newErrorResponse(c, http.StatusInternalServerError, "Failed to fetch song")
+		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to  fetch song: %v", err))
 		return
 	}
 

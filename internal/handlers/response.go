@@ -6,7 +6,7 @@ import (
 )
 
 type errorResponse struct { // Структура для кастомной ошибки в формате json
-	Message string `json:"error"`
+	Message string `json:"mesage"`
 }
 
 func newErrorResponse(c *gin.Context, statusCode int, message string) { // Функция для обработки http ошибок
