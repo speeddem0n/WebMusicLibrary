@@ -6,7 +6,7 @@ CREATE TABLE song_lib (
     song_name VARCHAR(255) NOT NULL,
     release_date DATE NOT NULL,
     text TEXT NOT NULL,
-    link VARCHAR(512)
+    link VARCHAR(512) NOT NULl
 );
 -- +goose StatementEnd
 
