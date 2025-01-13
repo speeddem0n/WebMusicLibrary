@@ -10,6 +10,8 @@ type SongRepository interface {
 	Add(input models.SongModel) (int, error)
 	Delete(id int) error
 	GetAll(pag models.PaginationRequest) ([]models.SongModel, error)
+	Update(id int, updateData models.UpdateInput) error
+	GetText(songId, page, pageSize int) ([]models.VerseModel, error)
 }
 
 type RestClient interface {
@@ -33,11 +35,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	songs := router.Group("/songs")
 	{
-		songs.GET("/", h.GetAllSongs)      // Получить все песни
-		songs.POST("/", h.AddSong)         // Добавить песню
-		songs.GET("/:id", h.GetSongVerse)  // Получить текст песни
-		songs.DELETE("/:id", h.DeleteSong) // Удалить песню
-		songs.PUT("/:id", h.UpdateSong)    // Обновить песню
+		songs.GET("/", h.GetAllSongsHandler)      // Получить все песни
+		songs.POST("/", h.AddSongHandler)         // Добавить песню
+		songs.GET("/:id", h.GetSongVerseHandler)  // Получить текст песни
+		songs.DELETE("/:id", h.DeleteSongHandler) // Удалить песню
+		songs.PUT("/:id", h.UpdateSongHandler)    // Обновить песню
 
 	}
 
