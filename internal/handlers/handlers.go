@@ -11,6 +11,7 @@ type SongRepository interface {
 	Delete(id int) error
 	GetAll(pag models.PaginationRequest) ([]models.SongModel, error)
 	Update(id int, updateData models.UpdateInput) error
+	GetText(songId, page, pageSize int) ([]models.VerseModel, error)
 }
 
 type RestClient interface {

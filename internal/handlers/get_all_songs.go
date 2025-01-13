@@ -7,27 +7,26 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
 func (h *Handler) GetAllSongsHandler(c *gin.Context) {
-	page := c.DefaultQuery("page", "1")           // Параметр page, по умолчанию 1
-	pageSize := c.DefaultQuery("page_size", "10") // Параметр page_size, по умолчанию 10
-	group := c.DefaultQuery("group", "")          // Параметр group
-	song := c.DefaultQuery("song", "")            // Параметр song
-	fromDate := c.DefaultQuery("from_date", "")   // Параметр from_date
-	toDate := c.DefaultQuery("to_date", "")       // Параметр to_date
-	text := c.DefaultQuery("text", "")            // Параметр text
-	link := c.DefaultQuery("link", "")            // Параметр link
+	group := c.DefaultQuery("group", "")        // Параметр group
+	song := c.DefaultQuery("song", "")          // Параметр song
+	fromDate := c.DefaultQuery("from_date", "") // Параметр from_date
+	toDate := c.DefaultQuery("to_date", "")     // Параметр to_date
+	text := c.DefaultQuery("text", "")          // Параметр text
+	link := c.DefaultQuery("link", "")          // Параметр link
 
 	// Преобразуем page и pageSize в int
-	pageInt, err := strconv.Atoi(page)
-	if err != nil || pageInt <= 0 {
-		pageInt = 1
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1")) // Параметр page, по умолчанию 1
+	if err != nil || page <= 0 {
+		page = 1
 	}
-	pageSizeInt, err := strconv.Atoi(pageSize)
-	if err != nil || pageSizeInt <= 0 {
-		pageSizeInt = 10
+	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10")) // Параметр page_size, по умолчанию 10
+	if err != nil || pageSize <= 0 {
+		pageSize = 10
 	}
 
 	// Парсим даты, если они предоставлены
@@ -49,8 +48,8 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 
 	// Строим запрос для получения песен
 	req := models.PaginationRequest{
-		Page:     pageInt,
-		PageSize: pageSizeInt,
+		Page:     page,
+		PageSize: pageSize,
 		Group:    group,
 		Song:     song,
 		FromDate: fromDateParsed,
@@ -66,6 +65,7 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 		return
 	}
 
+	logrus.Infof("Getting songs,  page: %d", page)
 	// отправляем успешный ответ с найденными песнями
 	c.JSON(http.StatusOK, gin.H{
 		"data": songs,

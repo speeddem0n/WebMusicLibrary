@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
@@ -36,6 +37,7 @@ func (h *Handler) UpdateSongHandler(c *gin.Context) {
 		return
 	}
 
+	logrus.Infof("Song updated successfully, song_id: %d", id)
 	// Возвращаем успешный ответ
 	c.JSON(http.StatusOK, gin.H{"message": "Song updated successfully"})
 }
