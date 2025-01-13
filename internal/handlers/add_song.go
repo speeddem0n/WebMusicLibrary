@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -15,12 +16,11 @@ type AddSongRequest struct { // Структура для обязательно
 	Song  string `json:"song" binding:"required"`
 }
 
-func (h *Handler) AddSong(c *gin.Context) {
+func (h *Handler) AddSongHandler(c *gin.Context) {
 	var req AddSongRequest        // Модель для считывания инпута пользователя
 	err := c.ShouldBindJSON(&req) // Получаем инпут от пользователя в формате JSON
 	if err != nil {
-		logrus.Errorf("Failed to fetch required params: %v", err)
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Failed to fetch required params: %v", err))
 		return
 	}
 
@@ -28,8 +28,7 @@ func (h *Handler) AddSong(c *gin.Context) {
 
 	songDetails, err := restClient.GetSongDetails(req.Group, req.Song) // Методом GetSongDetails делаем запрос на внешний апи и получаем детали песни
 	if err != nil {
-		logrus.Errorf("Failed to fetch song details: %v", err)
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to fetch song details: %v", err))
 		return
 	}
 	var releaseDate time.Time
@@ -37,13 +36,11 @@ func (h *Handler) AddSong(c *gin.Context) {
 	if songDetails.ReleaseDate != "" { //Проверяем дату на корректность и форматируем ее к нужному формату
 		releaseDate, err = time.Parse("2006-01-02", songDetails.ReleaseDate)
 		if err != nil {
-			logrus.Errorf("Invalid release date format: %v", err)
-			newErrorResponse(c, http.StatusBadRequest, "Invalid release date format")
+			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v", err))
 			return
 		}
 	} else {
-		logrus.Warn("Release date missing or invalid")
-		newErrorResponse(c, http.StatusBadRequest, "Invalid release date")
+		newErrorResponse(c, http.StatusBadRequest, "Release date missing or invalid")
 		return
 	}
 
@@ -57,8 +54,7 @@ func (h *Handler) AddSong(c *gin.Context) {
 
 	id, err := h.songs.Add(song) // Методом Add из слоя репозитория добавляем новую песню в БД
 	if err != nil {
-		logrus.Errorf("Failed to insert song in to DB: %v", err)
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to insert song in to DB: %v", err))
 		return
 	}
 
