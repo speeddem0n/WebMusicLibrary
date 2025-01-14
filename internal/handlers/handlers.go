@@ -2,8 +2,11 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/speeddem0n/WebMusicLibrary/docs"
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 	client "github.com/speeddem0n/WebMusicLibrary/internal/rest_client"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Интерфейс для связи обработчиков со слоем репозитория
@@ -38,7 +41,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	// Инициализация роутера
 	router := gin.New()
 
-	songs := router.Group("/songs")
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	songs := router.Group("/")
 	{
 		songs.GET("/", h.GetAllSongsHandler)      // Получить все песни
 		songs.POST("/", h.AddSongHandler)         // Добавить песню

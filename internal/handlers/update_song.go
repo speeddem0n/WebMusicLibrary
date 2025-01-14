@@ -11,6 +11,17 @@ import (
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
+// @Summary Update song
+// @Description Update song from library using id
+// @Tags Songs
+// @Accept json
+// @Produce json
+// @Param id path int true "Song ID"
+// @Param input body models.UpdateInput true "Input to update song (At least one field must be filled in)"
+// @Success 200 {integer} integer songID
+// @Failure 400 {object} errorResponse "Error message"
+// @Failure 500 {object} errorResponse "Error message"
+// @Router /{id} [put]
 func (h *Handler) UpdateSongHandler(c *gin.Context) {
 	// получаем id песни
 	id, err := strconv.Atoi(c.Param("id"))
@@ -62,7 +73,7 @@ func (h *Handler) UpdateSongHandler(c *gin.Context) {
 
 	// Возвращаем успешный ответ
 	logrus.Infof("Song updated successfully, song_id: %d", id)
-	c.JSON(http.StatusOK, gin.H{"message": "Song updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Song updated successfully", "id": id})
 }
 
 // Функиця проверяем Не пустой ли инпут для обновления песни

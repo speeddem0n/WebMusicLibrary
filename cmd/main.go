@@ -39,6 +39,12 @@ func runMigrations(db *sqlx.DB) {
 	logrus.Info("Database migrations applied successfully.")
 }
 
+// @title Music Library API
+// @version 1.0
+// @description This is a service for managing a music library.
+
+// @host localhost:8000
+// @BasePath /
 func main() {
 	// Инициализируем параметры логера
 	initLogger()
