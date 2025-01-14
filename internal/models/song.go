@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// Модель для песни
 type SongModel struct {
 	Id          int       `json:"-" db:"id"`
 	GroupName   string    `json:"group" binding:"required" db:"group_name"`
