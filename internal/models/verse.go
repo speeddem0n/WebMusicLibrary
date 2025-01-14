@@ -1,6 +1,6 @@
 package models
 
+// Модель для куплета
 type VerseModel struct {
-	Number int    `json:"verse_number"`
-	Verse  string `json:"verse"`
+	Verse string `json:"verse"`
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
@@ -12,7 +13,7 @@ func (r *SongPostgres) GetText(songId, page, pageSize int) ([]models.VerseModel,
 
 	err := r.db.Get(&fullText, query, songId) // Методом Get делаем SQL запрос
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("song with id %d doesn't exists", songId)
 	}
 
 	verses := splitTextToVerses(fullText)
@@ -37,17 +38,14 @@ func splitTextToVerses(text string) []models.VerseModel {
 
 	var verses []models.VerseModel // Массив для хранения куплетов
 	var currentVerse string        // Переменная для хранения текущего куплета
-	verseNumber := 1               // Счетчик для номера куплета
 
 	for _, line := range lines { // Обходим все строки
 		line = strings.TrimSpace(line) // Удаляем лишние пробелы
 		if line == "" {                // Если строка пустая то это конец куплета
 			if currentVerse != "" { // Если текущий куплет заполнен
 				verses = append(verses, models.VerseModel{ // Добавляем куплет в массив
-					Number: verseNumber,
-					Verse:  currentVerse,
+					Verse: currentVerse,
 				})
-				verseNumber++     // Увеличиваем номер куплета
 				currentVerse = "" // Сбрасываем текущий куплет
 
 			}
@@ -62,8 +60,7 @@ func splitTextToVerses(text string) []models.VerseModel {
 	// Добавляем последний куплет если он остался
 	if currentVerse != "" {
 		verses = append(verses, models.VerseModel{
-			Number: verseNumber,
-			Verse:  currentVerse,
+			Verse: currentVerse,
 		})
 	}
 

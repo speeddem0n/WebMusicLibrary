@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -30,7 +31,7 @@ func (h *Handler) GetSongVerseHandler(c *gin.Context) {
 	// Получаем текст песни из бд
 	verses, err := h.songs.GetText(songID, page, pageSize)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, "Failed to fetch song text")
+		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to fetch song text: %v", err))
 		return
 	}
 

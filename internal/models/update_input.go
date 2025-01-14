@@ -1,5 +1,6 @@
 package models
 
+// Модель для инпуты обновления песни
 type UpdateInput struct {
 	GroupName   string `json:"group" db:"group_name"`
 	SongName    string `json:"song" db:"song_name"`

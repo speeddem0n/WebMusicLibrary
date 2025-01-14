@@ -15,7 +15,7 @@ func (h *Handler) UpdateSongHandler(c *gin.Context) {
 	// получаем id песни
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("error on getting song id: %v", err))
+		newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("An error occured on getting song id: %v", err))
 		return
 	}
 
@@ -36,9 +36,6 @@ func (h *Handler) UpdateSongHandler(c *gin.Context) {
 			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v", err))
 			return
 		}
-	} else {
-		newErrorResponse(c, http.StatusBadRequest, "Release date missing or invalid")
-		return
 	}
 
 	// Строим запрос к бд для обновления песни
@@ -52,14 +49,14 @@ func (h *Handler) UpdateSongHandler(c *gin.Context) {
 
 	// Валидируем инпут
 	if !ValidateInput(response) {
-		newErrorResponse(c, http.StatusBadRequest, "request body is empty")
+		newErrorResponse(c, http.StatusBadRequest, "Request body is empty")
 		return
 	}
 
 	// Обновляем песню в базе данных
 	err = h.songs.Update(id, response)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, "failed to update song")
+		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to update song: %v", err))
 		return
 	}
 

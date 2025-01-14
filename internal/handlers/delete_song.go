@@ -13,14 +13,14 @@ func (h *Handler) DeleteSongHandler(c *gin.Context) {
 	// получаем id из URL
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("error on getting song id: %d", err))
+		newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("An error occured on getting song id: %d", err))
 		return
 	}
 
 	// удаляем песню из БД методом Delete
 	err = h.songs.Delete(id)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("error on deleting song: %v", err))
+		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("An error occured on deleting song: %v", err))
 		return
 	}
 
