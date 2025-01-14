@@ -16,6 +16,16 @@ type AddSongRequest struct {
 	Song  string `json:"song" binding:"required"`
 }
 
+// @Summary Add a new song
+// @Description Add a new song to the music library
+// @Tags Songs
+// @Accept json
+// @Produce json
+// @Param input body AddSongRequest true "Song details"
+// @Success 201 {integer} integer songID
+// @Failure 400 {object} errorResponse "Error message"
+// @Failure 500 {object} errorResponse "Error message"
+// @Router / [post]
 func (h *Handler) AddSongHandler(c *gin.Context) {
 	var req AddSongRequest
 
