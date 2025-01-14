@@ -67,11 +67,11 @@ paths:
         in: query
         name: song
         type: string
-      - description: Filtering after Date
+      - description: Filtering after Date DD.MM.YYYY
         in: query
         name: after
         type: string
-      - description: Filtering before Date
+      - description: Filtering before Date DD.MM.YYYY
         in: query
         name: before
         type: string

@@ -26,8 +26,8 @@ type songResonse struct {
 // @Produce json
 // @Param group query string false "Filter by group"
 // @Param song query string false "Filter by song name"
-// @Param after query string false "Filtering after Date"
-// @Param before query string false "Filtering before Date"
+// @Param after query string false "Filtering after Date DD.MM.YYYY"
+// @Param before query string false "Filtering before Date DD.MM.YYYY"
 // @Param text query string false "Filter by text"
 // @Param link query string false "Filter by link"
 // @Param page query int false "Page number (Default: 1)"
