@@ -73,9 +73,9 @@ func main() {
 	runMigrations(db)
 
 	// Инициализация зависимостей
-	repo := repository.NewSongPostgres(db)                                           // Слой репозитория
-	restClient := client.NewRestClient(os.Getenv("API_HOST"), os.Getenv("API_PORT")) // Создаем новый REST клиент для запроса на внешний API
-	handler := handlers.NewHandler(repo, restClient)                                 // Обработчики
+	repo := repository.NewSongPostgres(db)                                          // Слой репозитория
+	restClient := client.NewRestClient(os.Getenv("API_URL"), os.Getenv("API_PORT")) // Создаем новый REST клиент для запроса на внешний API
+	handler := handlers.NewHandler(repo, restClient)                                // Обработчики
 
 	// Инициализируем структуру сервера
 	srv := new(server.Server)
