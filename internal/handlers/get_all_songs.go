@@ -19,13 +19,30 @@ type songResonse struct {
 	Link        string `json:"link"`
 }
 
+// @Summary Get all songs
+// @Description Retrieve all songs with pagination and optional filters
+// @Tags Songs
+// @Accept json
+// @Produce json
+// @Param group query string false "Filter by group"
+// @Param song query string false "Filter by song name"
+// @Param after query string false "Filtering after Date"
+// @Param before query string false "Filtering before Date"
+// @Param text query string false "Filter by text"
+// @Param link query string false "Filter by link"
+// @Param page query int false "Page number (Default: 1)"
+// @Param page_size query int false "Page size (Default: 10)"
+// @Success 200 {array} songResonse "All songs"
+// @Failure 400 {object} errorResponse "Error message"
+// @Failure 500 {object} errorResponse "Error message"
+// @Router / [get]
 func (h *Handler) GetAllSongsHandler(c *gin.Context) {
-	group := c.DefaultQuery("group", "")        // Параметр group
-	song := c.DefaultQuery("song", "")          // Параметр song
-	fromDate := c.DefaultQuery("from_date", "") // Параметр from_date
-	toDate := c.DefaultQuery("to_date", "")     // Параметр to_date
-	text := c.DefaultQuery("text", "")          // Параметр text
-	link := c.DefaultQuery("link", "")          // Параметр link
+	group := c.DefaultQuery("group", "")   // Параметр group
+	song := c.DefaultQuery("song", "")     // Параметр song
+	after := c.DefaultQuery("after", "")   // Параметр after
+	before := c.DefaultQuery("before", "") // Параметр before
+	text := c.DefaultQuery("text", "")     // Параметр text
+	link := c.DefaultQuery("link", "")     // Параметр link
 
 	// Преобразуем page и pageSize в int
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1")) // Параметр page, по умолчанию 1
@@ -38,18 +55,18 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 	}
 
 	// Парсим даты, если они предоставлены
-	var fromDateParsed, toDateParsed time.Time
-	if fromDate != "" {
-		fromDateParsed, err = time.Parse("01.02.2006", fromDate)
+	var afterParsed, beforeParsed time.Time
+	if after != "" {
+		afterParsed, err = time.Parse("01.02.2006", after)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Invalid FromDate format. Expected format is DD.MM.YYY")
+			newErrorResponse(c, http.StatusBadRequest, "Invalid FromDate format. Expected format is DD.MM.YYYY")
 			return
 		}
 	}
-	if toDate != "" {
-		toDateParsed, err = time.Parse("01.02.2006", toDate)
+	if before != "" {
+		beforeParsed, err = time.Parse("01.02.2006", before)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Invalid ToDate format. Expected format is DD.MM.YYY")
+			newErrorResponse(c, http.StatusBadRequest, "Invalid ToDate format. Expected format is DD.MM.YYYY")
 			return
 		}
 	}
@@ -60,8 +77,8 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 		PageSize: pageSize,
 		Group:    group,
 		Song:     song,
-		FromDate: fromDateParsed,
-		ToDate:   toDateParsed,
+		FromDate: afterParsed,
+		ToDate:   beforeParsed,
 		Text:     text,
 		Link:     link,
 	}

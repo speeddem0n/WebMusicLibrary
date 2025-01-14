@@ -9,6 +9,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// @Summary Get song text
+// @Description Get song text from library with pagination by verses using song id
+// @Tags Songs
+// @Accept json
+// @Produce json
+// @Param id path int true "Song ID"
+// @Param page query int false "Page number (Default: 1)"
+// @Param page_size query int false "Page size (Default: 10)"
+// @Success 200 {array} models.VerseModel "Verses"
+// @Failure 400 {object} errorResponse "Error message"
+// @Failure 500 {object} errorResponse "Error message"
+// @Router /{id} [get]
 func (h *Handler) GetSongVerseHandler(c *gin.Context) {
 	// Получаем id песни
 	songID, err := strconv.Atoi(c.Param("id"))

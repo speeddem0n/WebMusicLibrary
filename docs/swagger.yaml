@@ -1,0 +1,245 @@
+basePath: /
+definitions:
+  handlers.AddSongRequest:
+    properties:
+      group:
+        type: string
+      song:
+        type: string
+    required:
+    - group
+    - song
+    type: object
+  handlers.errorResponse:
+    properties:
+      mesage:
+        type: string
+    type: object
+  handlers.songResonse:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      release_date:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+  models.UpdateInput:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      release_date:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+  models.VerseModel:
+    properties:
+      verse:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: This is a service for managing a music library.
+  title: Music Library API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all songs with pagination and optional filters
+      parameters:
+      - description: Filter by group
+        in: query
+        name: group
+        type: string
+      - description: Filter by song name
+        in: query
+        name: song
+        type: string
+      - description: Filtering after Date
+        in: query
+        name: after
+        type: string
+      - description: Filtering before Date
+        in: query
+        name: before
+        type: string
+      - description: Filter by text
+        in: query
+        name: text
+        type: string
+      - description: Filter by link
+        in: query
+        name: link
+        type: string
+      - description: 'Page number (Default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (Default: 10)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: All songs
+          schema:
+            items:
+              $ref: '#/definitions/handlers.songResonse'
+            type: array
+        "400":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      summary: Get all songs
+      tags:
+      - Songs
+    post:
+      consumes:
+      - application/json
+      description: Add a new song to the music library
+      parameters:
+      - description: Song details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AddSongRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: integer
+        "400":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      summary: Add a new song
+      tags:
+      - Songs
+  /{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete song from library using id
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      summary: Delete song
+      tags:
+      - Songs
+    get:
+      consumes:
+      - application/json
+      description: Get song text from library with pagination by verses using song
+        id
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 'Page number (Default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (Default: 10)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Verses
+          schema:
+            items:
+              $ref: '#/definitions/models.VerseModel'
+            type: array
+        "400":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      summary: Get song text
+      tags:
+      - Songs
+    put:
+      consumes:
+      - application/json
+      description: Update song from library using id
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Input to update song (At least one field must be filled in)
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      summary: Update song
+      tags:
+      - Songs
+swagger: "2.0"

@@ -9,6 +9,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// @Summary Delete song
+// @Description Delete song from library using id
+// @Tags Songs
+// @Accept json
+// @Produce json
+// @Param id path int true "Song ID"
+// @Success 200 {integer} integer songID
+// @Failure 400 {object} errorResponse "Error message"
+// @Failure 500 {object} errorResponse "Error message"
+// @Router /{id} [delete]
 func (h *Handler) DeleteSongHandler(c *gin.Context) {
 	// получаем id из URL
 	id, err := strconv.Atoi(c.Param("id"))
