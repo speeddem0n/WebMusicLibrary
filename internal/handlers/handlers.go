@@ -10,7 +10,7 @@ type SongRepository interface {
 	Add(input models.SongModel) (int, error)
 	Delete(id int) error
 	GetAll(pag models.PaginationRequest) ([]models.SongModel, error)
-	Update(id int, updateData models.UpdateInput) error
+	Update(id int, updateData models.SongModel) error
 	GetText(songId, page, pageSize int) ([]models.VerseModel, error)
 }
 

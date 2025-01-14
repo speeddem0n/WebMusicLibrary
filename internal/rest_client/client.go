@@ -11,7 +11,8 @@ type RestClient struct {
 	client *resty.Client
 }
 
-func NewRestClient(baseURL string) *RestClient {
+func NewRestClient(addres, port string) *RestClient {
+	baseURL := "http://" + addres + ":" + port
 	client := resty.New().SetBaseURL(baseURL).
 		SetRetryCount(3).
 		SetHeader("Content-type", "application/json").

@@ -11,6 +11,14 @@ import (
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
+type songResonse struct {
+	Group       string `json:"group"`
+	Song        string `json:"song"`
+	ReleaseDate string `json:"release_date"`
+	Text        string `json:"text"`
+	Link        string `json:"link"`
+}
+
 func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 	group := c.DefaultQuery("group", "")        // Параметр group
 	song := c.DefaultQuery("song", "")          // Параметр song
@@ -32,14 +40,14 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 	// Парсим даты, если они предоставлены
 	var fromDateParsed, toDateParsed time.Time
 	if fromDate != "" {
-		fromDateParsed, err = time.Parse("2006-01-02", fromDate)
+		fromDateParsed, err = time.Parse("01.02.2006", fromDate)
 		if err != nil {
 			newErrorResponse(c, http.StatusBadRequest, "Invalid FromDate format. Expected format is YYYY-MM-DD")
 			return
 		}
 	}
 	if toDate != "" {
-		toDateParsed, err = time.Parse("2006-01-02", toDate)
+		toDateParsed, err = time.Parse("01.02.2006", toDate)
 		if err != nil {
 			newErrorResponse(c, http.StatusBadRequest, "Invalid ToDate format. Expected format is YYYY-MM-DD")
 			return
@@ -64,10 +72,22 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to  fetch song: %v", err))
 		return
 	}
+	var response []songResonse
+
+	for _, song := range songs {
+		response = append(response, songResonse{
+			Group:       song.GroupName,
+			Song:        song.SongName,
+			ReleaseDate: song.ReleaseDate.Format("02.06.2006"),
+			Text:        song.Text,
+			Link:        song.Link,
+		})
+
+	}
 
 	logrus.Infof("Getting songs,  page: %d", page)
 	// отправляем успешный ответ с найденными песнями
 	c.JSON(http.StatusOK, gin.H{
-		"data": songs,
+		"data": response,
 	})
 }

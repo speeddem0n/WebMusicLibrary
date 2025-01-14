@@ -7,30 +7,30 @@ import (
 )
 
 func (r *SongPostgres) GetAll(pag models.PaginationRequest) ([]models.SongModel, error) {
-	query := "SELECT group_name, song_name, release_date, text, link FROM song_lib WHERE 1=1"
+	query := "SELECT group_name, song_name, release_date, text, link FROM song_lib WHERE 1=1 "
 	args := []interface{}{}
 	paramIndex := 1
 
 	if pag.Group != "" {
-		query += fmt.Sprintf("AND group_name IKIKE $%d", paramIndex)
+		query += fmt.Sprintf("AND group_name ILIKE $%d", paramIndex)
 		args = append(args, "%"+pag.Group+"%")
 		paramIndex++
 	}
 
 	if pag.Song != "" {
-		query += fmt.Sprintf("AND song_name IKIKE $%d", paramIndex)
+		query += fmt.Sprintf("AND song_name ILIKE $%d", paramIndex)
 		args = append(args, "%"+pag.Song+"%")
 		paramIndex++
 	}
 
 	if pag.Text != "" {
-		query += fmt.Sprintf("AND text IKIKE $%d", paramIndex)
+		query += fmt.Sprintf("AND text ILIKE $%d", paramIndex)
 		args = append(args, "%"+pag.Text+"%")
 		paramIndex++
 	}
 
 	if pag.Link != "" {
-		query += fmt.Sprintf("AND link IKIKE $%d", paramIndex)
+		query += fmt.Sprintf("AND link ILIKE $%d", paramIndex)
 		args = append(args, "%"+pag.Link+"%")
 		paramIndex++
 	}
@@ -47,7 +47,7 @@ func (r *SongPostgres) GetAll(pag models.PaginationRequest) ([]models.SongModel,
 		paramIndex++
 	}
 
-	query += fmt.Sprintf("LIMIT $%d OFFSET $%d", paramIndex, paramIndex+1)
+	query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramIndex, paramIndex+1)
 	args = append(args, pag.PageSize, (pag.Page-1)*pag.PageSize)
 
 	var Songs []models.SongModel

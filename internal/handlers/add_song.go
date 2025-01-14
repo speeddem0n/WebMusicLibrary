@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
-	client "github.com/speeddem0n/WebMusicLibrary/internal/rest_client"
 )
 
 type AddSongRequest struct { // Структура для обязательного ввода пользователя
@@ -24,9 +23,7 @@ func (h *Handler) AddSongHandler(c *gin.Context) {
 		return
 	}
 
-	restClient := client.NewRestClient("http://localhost:8080") // Создаем новый REST клиент
-
-	songDetails, err := restClient.GetSongDetails(req.Group, req.Song) // Методом GetSongDetails делаем запрос на внешний апи и получаем детали песни
+	songDetails, err := h.client.GetSongDetails(req.Group, req.Song) // Методом GetSongDetails делаем запрос на внешний апи и получаем детали песни
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to fetch song details: %v", err))
 		return
@@ -34,7 +31,7 @@ func (h *Handler) AddSongHandler(c *gin.Context) {
 	var releaseDate time.Time
 
 	if songDetails.ReleaseDate != "" { //Проверяем дату на корректность и форматируем ее к нужному формату
-		releaseDate, err = time.Parse("2006-01-02", songDetails.ReleaseDate)
+		releaseDate, err = time.Parse("02.06.2006", songDetails.ReleaseDate)
 		if err != nil {
 			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v", err))
 			return
@@ -59,5 +56,5 @@ func (h *Handler) AddSongHandler(c *gin.Context) {
 	}
 
 	logrus.Infof("Song added successfully, song_id: %d", id)
-	c.JSON(http.StatusCreated, gin.H{"message": "Song added successfully", "id": id, "song": song}) // Возвращаем пользователю ответ
+	c.JSON(http.StatusCreated, gin.H{"message": "Song added successfully", "id": id}) // Возвращаем пользователю ответ
 }

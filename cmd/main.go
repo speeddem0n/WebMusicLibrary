@@ -1,9 +1,109 @@
 package main
 
-import "github.com/sirupsen/logrus"
+import (
+	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"github.com/pressly/goose/v3"
+	"github.com/sirupsen/logrus"
+	"github.com/speeddem0n/WebMusicLibrary/internal/config"
+	"github.com/speeddem0n/WebMusicLibrary/internal/handlers"
+	"github.com/speeddem0n/WebMusicLibrary/internal/repository"
+	client "github.com/speeddem0n/WebMusicLibrary/internal/rest_client"
+	"github.com/speeddem0n/WebMusicLibrary/internal/server"
+)
+
+// Функция для настройки логирования
+func initLogger() {
+	// Настройка логирования
+	logrus.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
+	logrus.SetOutput(os.Stdout)
+	logrus.SetLevel(logrus.DebugLevel)
+}
+
+// Функцтя для запуска миграций
+func runMigrations(db *sqlx.DB) {
+	migrationsDir := "./internal/repository/migrations" // Путь к папке с миграциями
+
+	logrus.Info("Running database migrations...")
+	if err := goose.Up(db.DB, migrationsDir); err != nil {
+		logrus.Fatalf("Failed to apply migrations: %v", err)
+	}
+	logrus.Info("Database migrations applied successfully.")
+}
 
 func main() {
-	initLogger() // Инициализируем параметры логера
+	// Инициализируем параметры логера
+	initLogger()
 	logrus.Info("Starting application")
 
+	// Загружаем .env файл с параметрами приложения
+	err := godotenv.Load()
+	if err != nil {
+		logrus.Fatalf("Error loadong env variables: %s", err.Error())
+	}
+
+	// Инициализируем новое подключение к базе данных и передаем в него параметры из .env
+	db, err := repository.NewPostgresDB(config.ConfigDB{
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		Username: os.Getenv("DB_USERNAME"),
+		DBName:   os.Getenv("DB_NAME"),
+		SSLMode:  os.Getenv("DB_SSLMODE"),
+		Password: os.Getenv("DB_PASSWORD"),
+	})
+	if err != nil {
+		logrus.Fatalf("Failed to initialize db: %s", err.Error())
+	}
+
+	// Запускаем миграции при старте сервера
+	runMigrations(db)
+
+	// Инициализация зависимостей
+	repo := repository.NewSongPostgres(db)                                           // Слой репозитория
+	restClient := client.NewRestClient(os.Getenv("API_HOST"), os.Getenv("API_PORT")) // Создаем новый REST клиент
+	handler := handlers.NewHandler(repo, restClient)                                 // Обработчики
+
+	// Инициализируем структуру сервера
+	srv := new(server.Server)
+
+	//Запускаем сервер в отдельной горутине
+	go func() {
+		err := srv.Run(os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"), handler.InitRoutes())
+		if err != nil && err != http.ErrServerClosed {
+			logrus.Fatalf("Failed to run server: %s", err.Error())
+		}
+	}()
+
+	logrus.Info("Server is running")
+
+	// Реализация Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	logrus.Info("Server shutting down")
+
+	err = srv.Shutdown(context.Background())
+	if err != nil {
+		logrus.Errorf("Error occured on server shutting down: %s", err.Error())
+	}
+
+	logrus.Info("Server gracefully shuted down")
+
+	err = db.Close() // Закрываем подключение к бд
+	if err != nil {
+		logrus.Errorf("Error occured on db connection close: %s", err.Error())
+	}
+
+	logrus.Info("Connection to DB is closed")
+	logrus.Info("Exiting application")
 }
