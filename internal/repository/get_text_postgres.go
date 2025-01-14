@@ -7,15 +7,20 @@ import (
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
+// Метод БД для получения текста песни с пагинацией для куплетов
 func (r *SongPostgres) GetText(songId, page, pageSize int) ([]models.VerseModel, error) {
-	query := "SELECT text FROM song_lib WHERE id = $1" // SQL запрос
-	var fullText string                                // Переменная для записи полного текста песни
+	// SQL запрос
+	query := "SELECT text FROM song_lib WHERE id = $1"
+	// Переменная для записи полного текста песни
+	var fullText string
 
-	err := r.db.Get(&fullText, query, songId) // Методом Get делаем SQL запрос
+	// Методом Get делаем SQL запрос
+	err := r.db.Get(&fullText, query, songId)
 	if err != nil {
 		return nil, fmt.Errorf("song with id %d doesn't exists", songId)
 	}
 
+	// Разбиваем текст на куплеты
 	verses := splitTextToVerses(fullText)
 
 	// Реализуем пагинацию
@@ -34,15 +39,24 @@ func (r *SongPostgres) GetText(songId, page, pageSize int) ([]models.VerseModel,
 
 // Функция splitTextToVerses разбивает текст на куплеты
 func splitTextToVerses(text string) []models.VerseModel {
-	lines := strings.Split(text, "\n") // Разбиваем текст на строки
+	// Разбиваем текст на строки
+	lines := strings.Split(text, "\n")
 
-	var verses []models.VerseModel // Массив для хранения куплетов
-	var currentVerse string        // Переменная для хранения текущего куплета
+	// Массив для хранения куплетов
+	var verses []models.VerseModel
 
-	for _, line := range lines { // Обходим все строки
-		line = strings.TrimSpace(line) // Удаляем лишние пробелы
-		if line == "" {                // Если строка пустая то это конец куплета
-			if currentVerse != "" { // Если текущий куплет заполнен
+	// Переменная для хранения текущего куплета
+	var currentVerse string
+
+	// Обходим все строки
+	for _, line := range lines {
+		// Удаляем лишние пробелы
+		line = strings.TrimSpace(line)
+
+		// Если строка пустая то это конец куплета
+		if line == "" {
+			// Если текущий куплет заполнен
+			if currentVerse != "" {
 				verses = append(verses, models.VerseModel{ // Добавляем куплет в массив
 					Verse: currentVerse,
 				})

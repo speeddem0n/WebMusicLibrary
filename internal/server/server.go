@@ -10,8 +10,10 @@ type Server struct {
 	httpServer *http.Server
 }
 
-func (s *Server) Run(host, port string, handler http.Handler) error { // Метод запуска сервера
-	s.httpServer = &http.Server{ // Объявляем структуру http.Server
+// Метод запуска сервера
+func (s *Server) Run(host, port string, handler http.Handler) error {
+	// Объявляем структуру http.Server
+	s.httpServer = &http.Server{
 		Addr:           host + ":" + port, // Server address
 		Handler:        handler,           // Handler
 		MaxHeaderBytes: 1 << 20,           // 1 MB
@@ -19,9 +21,10 @@ func (s *Server) Run(host, port string, handler http.Handler) error { // Мет�
 		WriteTimeout:   10 * time.Second,
 	}
 
-	return s.httpServer.ListenAndServe() // Возвращаем метод структуры http.Server, ListenAndServe()
+	return s.httpServer.ListenAndServe()
 }
 
-func (s *Server) Shutdown(ctx context.Context) error { // Метод остановки сервера
+// Метод остановки сервера
+func (s *Server) Shutdown(ctx context.Context) error {
 	return s.httpServer.Shutdown(ctx)
 }

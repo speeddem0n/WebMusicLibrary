@@ -6,6 +6,7 @@ import (
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
+// Метод БД для обнавления песни
 func (r *SongPostgres) Update(id int, updateData models.SongModel) error {
 	// Строим базовый SQL запрос
 	query := "UPDATE song_lib SET "
