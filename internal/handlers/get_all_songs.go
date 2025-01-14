@@ -37,6 +37,8 @@ type songResonse struct {
 // @Failure 500 {object} errorResponse "Error message"
 // @Router / [get]
 func (h *Handler) GetAllSongsHandler(c *gin.Context) {
+	logrus.Info("Received request to fetch songs.")
+
 	group := c.DefaultQuery("group", "")   // Параметр group
 	song := c.DefaultQuery("song", "")     // Параметр song
 	after := c.DefaultQuery("after", "")   // Параметр after
@@ -57,16 +59,16 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 	// Парсим даты, если они предоставлены
 	var afterParsed, beforeParsed time.Time
 	if after != "" {
-		afterParsed, err = time.Parse("01.02.2006", after)
+		afterParsed, err = time.Parse("02.01.2006", after)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Invalid FromDate format. Expected format is DD.MM.YYYY")
+			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v. Expected format is DD.MM.YYYY", err))
 			return
 		}
 	}
 	if before != "" {
-		beforeParsed, err = time.Parse("01.02.2006", before)
+		beforeParsed, err = time.Parse("02.01.2006", before)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Invalid ToDate format. Expected format is DD.MM.YYYY")
+			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v. Expected format is DD.MM.YYYY", err))
 			return
 		}
 	}
@@ -95,7 +97,7 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 		response = append(response, songResonse{
 			Group:       song.GroupName,
 			Song:        song.SongName,
-			ReleaseDate: song.ReleaseDate.Format("02.06.2006"),
+			ReleaseDate: song.ReleaseDate.Format("02.01.2006"),
 			Text:        song.Text,
 			Link:        song.Link,
 		})
@@ -103,7 +105,7 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 	}
 
 	// Отправляем успешный ответ с найденными песнями
-	logrus.Infof("Getting songs,  page: %d", page)
+	logrus.Infof("Successfully fetched %d songs.", len(songs))
 	c.JSON(http.StatusOK, gin.H{
 		"data": response,
 	})
