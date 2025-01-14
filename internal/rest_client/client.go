@@ -14,18 +14,18 @@ type RestClient struct {
 // Конструктор для REST клиента
 func NewRestClient(addres, port string) *RestClient {
 	// Строим адрес для REST клиента
-	baseURL := "http://" + addres + ":" + port
+	baseURL := addres + ":" + port
 
 	// Создаем новый REST клиент по адресу baseURL
 	client := resty.New().SetBaseURL(baseURL).
 		SetRetryCount(3).
 		SetHeader("Content-type", "application/json").
 		OnBeforeRequest(func(client *resty.Client, req *resty.Request) error {
-			logrus.Printf("Request: %s %s", req.Method, req.URL)
+			logrus.Debugf("Request: %s %s", req.Method, req.URL)
 			return nil
 		}).
 		OnAfterResponse(func(client *resty.Client, resp *resty.Response) error {
-			logrus.Printf("Response: %d %s", resp.StatusCode(), resp.String())
+			logrus.Debugf("Response: %d %s", resp.StatusCode(), resp.String())
 			return nil
 		})
 

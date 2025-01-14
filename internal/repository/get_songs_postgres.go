@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 
+	"github.com/sirupsen/logrus"
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
@@ -58,11 +59,14 @@ func (r *SongPostgres) GetAll(pag models.PaginationRequest) ([]models.SongModel,
 	var Songs []models.SongModel
 
 	// Выполняем sql запрос
+	debugMsg := fmt.Sprintf("Executing query: %s", query)
+	logrus.Debugf(debugMsg+" with args: %+v", args...)
 	err := r.db.Select(&Songs, query, args...)
 	if err != nil {
 		return nil, err
 	}
 
 	// Возвращаем полученный слайс с песнями
+	logrus.Infof("Query executed successfully, %d songs selected on page %d", pag.PageSize, pag.Page)
 	return Songs, nil
 }

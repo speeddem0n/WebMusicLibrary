@@ -43,13 +43,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Filtering after Date",
+                        "description": "Filtering after Date DD.MM.YYYY",
                         "name": "after",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filtering before Date",
+                        "description": "Filtering before Date DD.MM.YYYY",
                         "name": "before",
                         "in": "query"
                     },

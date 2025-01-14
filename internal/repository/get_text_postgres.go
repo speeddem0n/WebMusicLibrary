@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/speeddem0n/WebMusicLibrary/internal/models"
 )
 
@@ -15,11 +16,12 @@ func (r *SongPostgres) GetText(songId, page, pageSize int) ([]models.VerseModel,
 	var fullText string
 
 	// Методом Get делаем SQL запрос
+	logrus.Debugf("Executing query: %s with args: %+v", query, songId)
 	err := r.db.Get(&fullText, query, songId)
 	if err != nil {
 		return nil, fmt.Errorf("song with id %d doesn't exists", songId)
 	}
-
+	logrus.Infof("Query executed successfully, 1 row added with id: %d", songId)
 	// Разбиваем текст на куплеты
 	verses := splitTextToVerses(fullText)
 
