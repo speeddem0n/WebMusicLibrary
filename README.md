@@ -16,8 +16,6 @@ cd WebMusicLibrary
 2. Настройте .env файл:
    Создайте файл .env в корневой директории проекта и укажите следующие параметры:
 
-## Configuration
-
 Настройки приложения определяются в файле .env. Ниже перечислены все переменные окружения с их описанием:
 
 | Переменная       | Описание                                          | Пример значения           |
@@ -27,11 +25,11 @@ cd WebMusicLibrary
 | DB_HOST        | Адрес хоста базы данных                         | localhost               |
 | DB_PORT        | Порт для подключения к базе данных              | 5432                    |
 | DB_USERNAME    | Имя пользователя для подключения к базе данных  | postgres                |
-| DB_PASSWORD    | Пароль пользователя базы данных                 | password                |
 | DB_NAME        | Имя базы данных                                 | music_library           |
+| DB_PASSWORD    | Пароль пользователя базы данных                 | password                |
 | DB_SSLMODE     | SSL mode                                        | disable                 |
 | API_URL        | URL внешнего API для получения информации о песнях | api.example.com или localhost (без приставки http://)|
-| APP_PORT       | Порт, внешнего API                              | 8080                    |
+| API_PORT       | Порт, внешнего API                              | 8080                    |
 
 ### Пример .env файла
 
@@ -85,7 +83,7 @@ go run cmd/main.go
    - Структура базы данных создается с помощью миграций, выполняемых при старте сервиса (с использованием Goose).
 
 4. Логирование:
-   - Поддержка debug- и info-логов с использованием библиотеки Logrus.
+   - Поддержка debug- и info-логов с использованием библиотеки <a href="https://github.com/sirupsen/logrus">logrus</a>.
 
 5. Конфигурация:
    - Все настройки сервиса хранятся в .env файле.
@@ -99,15 +97,21 @@ go run cmd/main.go
 ## Примеры API запросов
 
 ### Получение списка песен
-GET /songs
+GET /
 ```http
-GET http://localhost:8000/songs?page=1&pageSize=4&group=Muse
+GET http://localhost:8000/?page=1&pageSize=4&group=Muse
+```
+
+### Получение текста песни
+GET /:id
+```http
+GET http://localhost:8080/1?page=1&pageSize=5
 ```
 
 ### Добавление новой песни
-POST /songs
+POST /
 ```http
-POST http://localhost:8000/songs
+POST http://localhost:8000/
 Content-Type: application/json
 
 {
@@ -117,9 +121,9 @@ Content-Type: application/json
 ```
 
 ### Изменение песни
-PUT /songs/:id
+PUT /:id
 ```http
-PUT http://localhost:8000/songs/1
+PUT http://localhost:8000/1
 Content-Type: application/json
 
 {
@@ -128,9 +132,9 @@ Content-Type: application/json
 ```
 
 ## Удаление песни
-DELETE /songs/:id
+DELETE /:id
 ```http
-DELETE http://localhost:8000/songs/1
+DELETE http://localhost:8000/1
 ```
 
 ---
