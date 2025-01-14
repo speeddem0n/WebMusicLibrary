@@ -55,6 +55,7 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("Error loadong env variables: %s", err.Error())
 	}
+	logrus.Info("Env variables loaded successfully")
 
 	// Инициализируем новое подключение к базе данных и передаем в него параметры из .env
 	db, err := repository.NewPostgresDB(config.ConfigDB{
@@ -81,13 +82,13 @@ func main() {
 	srv := new(server.Server)
 
 	// Запускаем сервер в отдельной горутине
+	logrus.Info("Starting server...")
 	go func() {
 		err := srv.Run(os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"), handler.InitRoutes())
 		if err != nil && err != http.ErrServerClosed {
 			logrus.Fatalf("Failed to run server: %s", err.Error())
 		}
 	}()
-
 	logrus.Info("Server is running")
 
 	// Реализация Graceful shutdown
@@ -95,7 +96,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	logrus.Info("Server shutting down")
+	logrus.Info("Server shutting down...")
 
 	err = srv.Shutdown(context.Background())
 	if err != nil {
@@ -105,6 +106,7 @@ func main() {
 	logrus.Info("Server gracefully shuted down")
 
 	// Закрываем подключение к бд
+	logrus.Info("Closing connection to Data Base...")
 	err = db.Close()
 	if err != nil {
 		logrus.Errorf("Error occured on db connection close: %s", err.Error())

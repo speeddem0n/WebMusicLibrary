@@ -20,6 +20,7 @@ import (
 // @Failure 500 {object} errorResponse "Error message"
 // @Router /{id} [delete]
 func (h *Handler) DeleteSongHandler(c *gin.Context) {
+	logrus.Info("Received request to delete song.")
 	// получаем id из URL
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

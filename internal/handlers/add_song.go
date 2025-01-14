@@ -27,6 +27,7 @@ type AddSongRequest struct {
 // @Failure 500 {object} errorResponse "Error message"
 // @Router / [post]
 func (h *Handler) AddSongHandler(c *gin.Context) {
+	logrus.Infof("Recived request to add song")
 	var req AddSongRequest
 
 	// Получаем инпут от пользователя в формате JSON
@@ -37,22 +38,23 @@ func (h *Handler) AddSongHandler(c *gin.Context) {
 	}
 
 	// Методом GetSongDetails делаем запрос на внешний API и получаем детали песни
+	logrus.Infof("Fetching song details for group: %s, song: %s", req.Group, req.Song)
 	songDetails, err := h.client.GetSongDetails(req.Group, req.Song)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to fetch song details: %v", err))
+		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Invalid release date format: %v. Expected format is DD.MM.YYYY", err))
 		return
 	}
 	var releaseDate time.Time
 
 	// Валидируем дату и форматируем ее к нужному формату
 	if songDetails.ReleaseDate != "" {
-		releaseDate, err = time.Parse("02.06.2006", songDetails.ReleaseDate)
+		releaseDate, err = time.Parse("02.01.2006", songDetails.ReleaseDate)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v", err))
+			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v. Expected format is DD.MM.YYYY", err))
 			return
 		}
 	} else {
-		newErrorResponse(c, http.StatusBadRequest, "Release date missing or invalid")
+		newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Release date missing or invalid: %v", err))
 		return
 	}
 

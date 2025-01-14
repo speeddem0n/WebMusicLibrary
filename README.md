@@ -28,7 +28,7 @@ cd WebMusicLibrary
 | DB_NAME        | Имя базы данных                                 | music_library           |
 | DB_PASSWORD    | Пароль пользователя базы данных                 | password                |
 | DB_SSLMODE     | SSL mode                                        | disable                 |
-| API_URL        | URL внешнего API для получения информации о песнях | api.example.com или localhost (без приставки http://)|
+| API_URL        | URL внешнего API для получения информации о песнях | http://api.example.com или http://localhost|
 | API_PORT       | Порт, внешнего API                              | 8080                    |
 
 ### Пример .env файла

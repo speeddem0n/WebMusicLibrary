@@ -23,6 +23,7 @@ import (
 // @Failure 500 {object} errorResponse "Error message"
 // @Router /{id} [put]
 func (h *Handler) UpdateSongHandler(c *gin.Context) {
+	logrus.Info("Received request to update song.")
 	// получаем id песни
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -42,9 +43,9 @@ func (h *Handler) UpdateSongHandler(c *gin.Context) {
 	var releaseDate time.Time
 
 	if updateInput.ReleaseDate != "" {
-		releaseDate, err = time.Parse("02.06.2006", updateInput.ReleaseDate)
+		releaseDate, err = time.Parse("02.01.2006", updateInput.ReleaseDate)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v", err))
+			newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid release date format: %v. Expected format is DD.MM.YYYY", err))
 			return
 		}
 	}

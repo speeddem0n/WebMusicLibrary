@@ -22,10 +22,11 @@ import (
 // @Failure 500 {object} errorResponse "Error message"
 // @Router /{id} [get]
 func (h *Handler) GetSongVerseHandler(c *gin.Context) {
+	logrus.Info("Received request to fetch song text.")
 	// Получаем id песни
 	songID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "Invalid song id")
+		newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid song id: %v", err))
 		return
 	}
 
@@ -48,6 +49,6 @@ func (h *Handler) GetSongVerseHandler(c *gin.Context) {
 	}
 
 	// Возвращаем результат пользователю
-	logrus.Infof("Getting song text,  page: %d", page)
+	logrus.Infof("Getting song text successfully, got %d verses,  page: %d", len(verses), page)
 	c.JSON(http.StatusOK, gin.H{"text": verses})
 }
