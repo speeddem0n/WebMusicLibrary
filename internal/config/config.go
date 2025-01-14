@@ -1,5 +1,6 @@
 package config
 
+// Структура для параметров подключения к БД
 type ConfigDB struct {
 	Host     string
 	Port     string
@@ -9,11 +10,8 @@ type ConfigDB struct {
 	Password string
 }
 
+// Структура для параметров подключения к серверу
 type ConfigServer struct {
 	Host string
 	Port string
-}
-
-func initConfig() {
-
 }

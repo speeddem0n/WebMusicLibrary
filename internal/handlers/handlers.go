@@ -6,6 +6,7 @@ import (
 	client "github.com/speeddem0n/WebMusicLibrary/internal/rest_client"
 )
 
+// Интерфейс для связи обработчиков со слоем репозитория
 type SongRepository interface {
 	Add(input models.SongModel) (int, error)
 	Delete(id int) error
@@ -14,16 +15,19 @@ type SongRepository interface {
 	GetText(songId, page, pageSize int) ([]models.VerseModel, error)
 }
 
+// Интерфейс для связи обработчиков с REST клиетом
 type RestClient interface {
 	GetSongDetails(group, song string) (*client.SongDetail, error)
 }
 
-type Handler struct { // Структура обработчиков
+// Структура обработчика
+type Handler struct {
 	songs  SongRepository // Интерфес для работы со слоем репозитория
 	client RestClient     // Интерфейс для работы с Rest клиентом
 }
 
-func NewHandler(songs SongRepository, client RestClient) *Handler { // Конструктор для обработчика
+// Конструктор для обработчика
+func NewHandler(songs SongRepository, client RestClient) *Handler {
 	return &Handler{
 		songs:  songs,
 		client: client,
@@ -31,7 +35,8 @@ func NewHandler(songs SongRepository, client RestClient) *Handler { // Конс�
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
-	router := gin.New() // Инициализация роутера
+	// Инициализация роутера
+	router := gin.New()
 
 	songs := router.Group("/songs")
 	{

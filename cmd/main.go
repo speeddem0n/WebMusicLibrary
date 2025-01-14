@@ -21,7 +21,6 @@ import (
 
 // Функция для настройки логирования
 func initLogger() {
-	// Настройка логирования
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
 	})
@@ -29,7 +28,7 @@ func initLogger() {
 	logrus.SetLevel(logrus.DebugLevel)
 }
 
-// Функцтя для запуска миграций
+// Функция для запуска миграций
 func runMigrations(db *sqlx.DB) {
 	migrationsDir := "./internal/repository/migrations" // Путь к папке с миграциями
 
@@ -64,18 +63,18 @@ func main() {
 		logrus.Fatalf("Failed to initialize db: %s", err.Error())
 	}
 
-	// Запускаем миграции при старте сервера
+	// Запускаем миграции при старте приложения
 	runMigrations(db)
 
 	// Инициализация зависимостей
 	repo := repository.NewSongPostgres(db)                                           // Слой репозитория
-	restClient := client.NewRestClient(os.Getenv("API_HOST"), os.Getenv("API_PORT")) // Создаем новый REST клиент
+	restClient := client.NewRestClient(os.Getenv("API_HOST"), os.Getenv("API_PORT")) // Создаем новый REST клиент для запроса на внешний API
 	handler := handlers.NewHandler(repo, restClient)                                 // Обработчики
 
 	// Инициализируем структуру сервера
 	srv := new(server.Server)
 
-	//Запускаем сервер в отдельной горутине
+	// Запускаем сервер в отдельной горутине
 	go func() {
 		err := srv.Run(os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"), handler.InitRoutes())
 		if err != nil && err != http.ErrServerClosed {
@@ -99,7 +98,8 @@ func main() {
 
 	logrus.Info("Server gracefully shuted down")
 
-	err = db.Close() // Закрываем подключение к бд
+	// Закрываем подключение к бд
+	err = db.Close()
 	if err != nil {
 		logrus.Errorf("Error occured on db connection close: %s", err.Error())
 	}

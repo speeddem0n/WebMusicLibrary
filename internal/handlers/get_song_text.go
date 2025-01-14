@@ -34,7 +34,7 @@ func (h *Handler) GetSongVerseHandler(c *gin.Context) {
 		return
 	}
 
+	// Возвращаем результат пользователю
 	logrus.Infof("Getting song text,  page: %d", page)
-	// Возвращаем результат
 	c.JSON(http.StatusOK, gin.H{"text": verses})
 }

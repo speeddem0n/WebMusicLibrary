@@ -42,14 +42,14 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 	if fromDate != "" {
 		fromDateParsed, err = time.Parse("01.02.2006", fromDate)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Invalid FromDate format. Expected format is YYYY-MM-DD")
+			newErrorResponse(c, http.StatusBadRequest, "Invalid FromDate format. Expected format is DD.MM.YYY")
 			return
 		}
 	}
 	if toDate != "" {
 		toDateParsed, err = time.Parse("01.02.2006", toDate)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Invalid ToDate format. Expected format is YYYY-MM-DD")
+			newErrorResponse(c, http.StatusBadRequest, "Invalid ToDate format. Expected format is DD.MM.YYY")
 			return
 		}
 	}
@@ -85,8 +85,8 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 
 	}
 
+	// Отправляем успешный ответ с найденными песнями
 	logrus.Infof("Getting songs,  page: %d", page)
-	// отправляем успешный ответ с найденными песнями
 	c.JSON(http.StatusOK, gin.H{
 		"data": response,
 	})
