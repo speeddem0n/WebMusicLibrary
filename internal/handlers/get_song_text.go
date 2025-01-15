@@ -21,7 +21,7 @@ import (
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
 // @Router /{id} [get]
-func (h *Handler) GetSongVerseHandler(c *gin.Context) {
+func (h *handlerService) GetSongVerseHandler(c *gin.Context) {
 	logrus.Info("Received request to fetch song text.")
 	// Получаем id песни
 	songID, err := strconv.Atoi(c.Param("id"))
@@ -42,7 +42,7 @@ func (h *Handler) GetSongVerseHandler(c *gin.Context) {
 	}
 
 	// Получаем текст песни из бд
-	verses, err := h.songs.GetText(songID, page, pageSize)
+	verses, err := h.dbClient.GetSongText(songID, page, pageSize)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to fetch song text: %v", err))
 		return

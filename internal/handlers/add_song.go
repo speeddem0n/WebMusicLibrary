@@ -26,7 +26,7 @@ type AddSongRequest struct {
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
 // @Router / [post]
-func (h *Handler) AddSongHandler(c *gin.Context) {
+func (h *handlerService) AddSongHandler(c *gin.Context) {
 	logrus.Infof("Recived request to add song")
 	var req AddSongRequest
 
@@ -39,7 +39,7 @@ func (h *Handler) AddSongHandler(c *gin.Context) {
 
 	// Методом GetSongDetails делаем запрос на внешний API и получаем детали песни
 	logrus.Infof("Fetching song details for group: %s, song: %s", req.Group, req.Song)
-	songDetails, err := h.client.GetSongDetails(req.Group, req.Song)
+	songDetails, err := h.externalHttpClient.GetSongDetails(req.Group, req.Song)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Invalid release date format: %v. Expected format is DD.MM.YYYY", err))
 		return
@@ -68,7 +68,7 @@ func (h *Handler) AddSongHandler(c *gin.Context) {
 	}
 
 	// Методом Add из слоя репозитория добавляем новую песню в БД
-	id, err := h.songs.Add(song)
+	id, err := h.dbClient.AddSong(song)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to insert song in to DB: %v", err))
 		return

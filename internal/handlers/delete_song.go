@@ -19,7 +19,7 @@ import (
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
 // @Router /{id} [delete]
-func (h *Handler) DeleteSongHandler(c *gin.Context) {
+func (h *handlerService) DeleteSongHandler(c *gin.Context) {
 	logrus.Info("Received request to delete song.")
 	// получаем id из URL
 	id, err := strconv.Atoi(c.Param("id"))
@@ -29,7 +29,7 @@ func (h *Handler) DeleteSongHandler(c *gin.Context) {
 	}
 
 	// удаляем песню из БД методом Delete
-	err = h.songs.Delete(id)
+	err = h.dbClient.DeleteSong(id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("An error occured on deleting song: %v", err))
 		return

@@ -12,7 +12,7 @@ type StorageFacade interface {
 	AddSong(input models.SongModel) (int, error)
 	DeleteSong(id int) error
 	GetAllSongs(pag models.PaginationRequest) ([]models.SongModel, error)
-	UpdateSongs(id int, updateData models.SongModel) error
+	UpdateSong(id int, updateData models.SongModel) error
 	GetSongText(songId, page, pageSize int) ([]models.VerseModel, error)
 }
 

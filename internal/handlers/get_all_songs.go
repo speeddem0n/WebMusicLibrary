@@ -36,7 +36,7 @@ type songResonse struct {
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
 // @Router / [get]
-func (h *Handler) GetAllSongsHandler(c *gin.Context) {
+func (h *handlerService) GetAllSongsHandler(c *gin.Context) {
 	logrus.Info("Received request to fetch songs.")
 
 	group := c.DefaultQuery("group", "")   // Параметр group
@@ -86,7 +86,7 @@ func (h *Handler) GetAllSongsHandler(c *gin.Context) {
 	}
 
 	// Получаем список песен с фильтрацией и пагинацией
-	songs, err := h.songs.GetAll(req)
+	songs, err := h.dbClient.GetAllSongs(req)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to  fetch song: %v", err))
 		return

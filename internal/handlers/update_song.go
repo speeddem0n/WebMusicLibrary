@@ -22,7 +22,7 @@ import (
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
 // @Router /{id} [put]
-func (h *Handler) UpdateSongHandler(c *gin.Context) {
+func (h *handlerService) UpdateSongHandler(c *gin.Context) {
 	logrus.Info("Received request to update song.")
 	// получаем id песни
 	id, err := strconv.Atoi(c.Param("id"))
@@ -66,7 +66,7 @@ func (h *Handler) UpdateSongHandler(c *gin.Context) {
 	}
 
 	// Обновляем песню в базе данных
-	err = h.songs.Update(id, response)
+	err = h.dbClient.UpdateSong(id, response)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Failed to update song: %v", err))
 		return

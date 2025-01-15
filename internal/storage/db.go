@@ -199,7 +199,7 @@ func splitTextToVerses(text string) []models.VerseModel {
 }
 
 // Метод БД для обнавления песни
-func (r *storage) UpdateSongs(id int, updateData models.SongModel) error {
+func (r *storage) UpdateSong(id int, updateData models.SongModel) error {
 	// Строим базовый SQL запрос
 	query := "UPDATE song_lib SET "
 	args := []interface{}{}
