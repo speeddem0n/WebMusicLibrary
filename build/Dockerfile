@@ -1,0 +1,23 @@
+FROM golang:1.23-alpine
+
+WORKDIR /app
+
+COPY ./go.mod .
+COPY ./go.sum .
+RUN go mod download
+
+COPY . .
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build ./cmd -o musicApp
+
+
+FROM alpine:latest
+
+ENV DB_HOST= 
+ENV DB_SSL=
+ENV LOG_LVL=
+
+COPY --from=0 /app/musicApp /musicApp
+COPY ./build/entrypoint.sh /entrypoint.sh
+COPY ./scripts/migrations /migrations
+
+ENTRYPOINT ["/entrypoint.sh"]

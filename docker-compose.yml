@@ -1,0 +1,25 @@
+services:
+  musicApp:
+    build: ./build/
+    image: music-app:latest
+    container_name: musicApp
+    restart: always
+    env_file:
+      - ./config.env
+    ports:
+      - 8005:8005
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:latest
+    volumes:
+    - ./.database/postgres/data/psqldat:/var/lib/postgresql/data
+    env_file:
+      - ./config.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d ????" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
