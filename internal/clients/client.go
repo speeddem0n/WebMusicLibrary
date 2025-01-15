@@ -1,3 +1,5 @@
+//go:generate mockgen -source=client.go -destination=mock/client_mock.go
+
 package client
 
 import (
@@ -7,15 +9,20 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type RestClient struct {
+// Интерфейс для связи обработчиков с REST клиетом
+type RestClient interface {
+	GetSongDetails(group, song string) (*SongDetail, error)
+}
+
+type httpClient struct {
 	client *resty.Client
 }
 
 // Конструктор для REST клиента
-func NewRestClient(baseURL string) *RestClient {
+func NewRestClient() RestClient {
 
 	// Создаем новый REST клиент по адресу baseURL
-	client := resty.New().SetBaseURL(baseURL).
+	client := resty.New().SetBaseURL(config.Conf.ExternalClientUrl).
 		SetRetryCount(3).
 		SetHeader("Content-type", "application/json").
 		OnBeforeRequest(func(client *resty.Client, req *resty.Request) error {
@@ -27,7 +34,7 @@ func NewRestClient(baseURL string) *RestClient {
 			return nil
 		})
 
-	return &RestClient{client: client}
+	return &httpClient{client: client}
 }
 
 // Структура данных для записи деталей песни
@@ -38,7 +45,7 @@ type SongDetail struct {
 }
 
 // Функция для получения деталей песни со внешнего API
-func (rc *RestClient) GetSongDetails(group, song string) (*SongDetail, error) {
+func (rc *httpClient) GetSongDetails(group, song string) (*SongDetail, error) {
 	var songDetail SongDetail
 
 	// Делаем GET запрос по адресу /info
