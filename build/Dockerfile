@@ -22,6 +22,6 @@ ENV API_URL =
 
 COPY --from=0 /app/musicApp /musicApp
 COPY ./build/entrypoint.sh /entrypoint.sh
-COPY ./scripts/migrations /migrations
+COPY ././scripts/migrations /migrations
 
 ENTRYPOINT ["/entrypoint.sh"]
