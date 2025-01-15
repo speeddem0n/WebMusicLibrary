@@ -53,64 +53,7 @@ info:
   title: Music Library API
   version: "1.0"
 paths:
-  /:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve all songs with pagination and optional filters
-      parameters:
-      - description: Filter by group
-        in: query
-        name: group
-        type: string
-      - description: Filter by song name
-        in: query
-        name: song
-        type: string
-      - description: Filtering after Date DD.MM.YYYY
-        in: query
-        name: after
-        type: string
-      - description: Filtering before Date DD.MM.YYYY
-        in: query
-        name: before
-        type: string
-      - description: Filter by text
-        in: query
-        name: text
-        type: string
-      - description: Filter by link
-        in: query
-        name: link
-        type: string
-      - description: 'Page number (Default: 1)'
-        in: query
-        name: page
-        type: integer
-      - description: 'Page size (Default: 10)'
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: All songs
-          schema:
-            items:
-              $ref: '#/definitions/handlers.songResonse'
-            type: array
-        "400":
-          description: Error message
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "500":
-          description: Error message
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      summary: Get all songs
-      tags:
-      - Songs
+  /songs:
     post:
       consumes:
       - application/json
@@ -140,7 +83,7 @@ paths:
       summary: Add a new song
       tags:
       - Songs
-  /{id}:
+  /songs/{id}:
     delete:
       consumes:
       - application/json
@@ -240,6 +183,64 @@ paths:
           schema:
             $ref: '#/definitions/handlers.errorResponse'
       summary: Update song
+      tags:
+      - Songs
+  /songs/list:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all songs with pagination and optional filters
+      parameters:
+      - description: Filter by group
+        in: query
+        name: group
+        type: string
+      - description: Filter by song name
+        in: query
+        name: song
+        type: string
+      - description: Filtering after Date DD.MM.YYYY
+        in: query
+        name: after
+        type: string
+      - description: Filtering before Date DD.MM.YYYY
+        in: query
+        name: before
+        type: string
+      - description: Filter by text
+        in: query
+        name: text
+        type: string
+      - description: Filter by link
+        in: query
+        name: link
+        type: string
+      - description: 'Page number (Default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (Default: 10)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: All songs
+          schema:
+            items:
+              $ref: '#/definitions/handlers.songResonse'
+            type: array
+        "400":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Error message
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      summary: Get all songs
       tags:
       - Songs
 swagger: "2.0"
