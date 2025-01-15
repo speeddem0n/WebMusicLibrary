@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/sirupsen/logrus"
+	"github.com/speeddem0n/WebMusicLibrary/internal/config"
 )
 
 // Интерфейс для связи обработчиков с REST клиетом

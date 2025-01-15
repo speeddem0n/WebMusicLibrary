@@ -25,7 +25,7 @@ type AddSongRequest struct {
 // @Success 201 {integer} integer songID
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
-// @Router / [post]
+// @Router /songs [post]
 func (h *handlerService) AddSongHandler(c *gin.Context) {
 	logrus.Infof("Recived request to add song")
 	var req AddSongRequest

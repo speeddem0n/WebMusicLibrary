@@ -18,7 +18,7 @@ import (
 // @Success 200 {integer} integer songID
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
-// @Router /{id} [delete]
+// @Router /songs/{id} [delete]
 func (h *handlerService) DeleteSongHandler(c *gin.Context) {
 	logrus.Info("Received request to delete song.")
 	// получаем id из URL

@@ -35,7 +35,7 @@ type songResonse struct {
 // @Success 200 {array} songResonse "All songs"
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
-// @Router / [get]
+// @Router /songs/list [get]
 func (h *handlerService) GetAllSongsHandler(c *gin.Context) {
 	logrus.Info("Received request to fetch songs.")
 

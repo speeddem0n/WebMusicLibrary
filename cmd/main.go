@@ -6,17 +6,23 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
 	"github.com/sirupsen/logrus"
+
+	_ "github.com/speeddem0n/WebMusicLibrary/docs"
+	client "github.com/speeddem0n/WebMusicLibrary/internal/clients"
 	"github.com/speeddem0n/WebMusicLibrary/internal/config"
+	"github.com/speeddem0n/WebMusicLibrary/internal/connections"
 	"github.com/speeddem0n/WebMusicLibrary/internal/handlers"
-	"github.com/speeddem0n/WebMusicLibrary/internal/repository"
-	client "github.com/speeddem0n/WebMusicLibrary/internal/rest_client"
-	"github.com/speeddem0n/WebMusicLibrary/internal/server"
+	"github.com/speeddem0n/WebMusicLibrary/internal/storage"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Функция для настройки логирования
@@ -25,18 +31,35 @@ func initLogger() {
 		FullTimestamp: true,
 	})
 	logrus.SetOutput(os.Stdout)
-	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetLevel(config.Conf.LogLvl)
 }
 
 // Функция для запуска миграций
 func runMigrations(db *sqlx.DB) {
-	migrationsDir := "./internal/repository/migrations" // Путь к папке с миграциями
+	migrationsDir := "./migrations" // Путь к папке с миграциями
 
 	logrus.Info("Running database migrations...")
 	if err := goose.Up(db.DB, migrationsDir); err != nil {
 		logrus.Fatalf("Failed to apply migrations: %v", err)
 	}
 	logrus.Info("Database migrations applied successfully.")
+}
+
+// Инициализация роутера
+func setupRouter(h handlers.HandlerService) *gin.Engine {
+	router := gin.New()
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	songs := router.Group("/songs")
+	{
+		songs.GET("/list", h.GetAllSongsHandler)  // Получить все песни
+		songs.POST("/", h.AddSongHandler)         // Добавить песню
+		songs.GET("/:id", h.GetSongVerseHandler)  // Получить текст песни
+		songs.DELETE("/:id", h.DeleteSongHandler) // Удалить песню
+		songs.PUT("/:id", h.UpdateSongHandler)    // Обновить песню
+	}
+
+	return router
 }
 
 // @title Music Library API
@@ -46,47 +69,44 @@ func runMigrations(db *sqlx.DB) {
 // @host localhost:8000
 // @BasePath /
 func main() {
+	// Загружаем config конфиг приложения
+	config.Init()
+
 	// Инициализируем параметры логера
 	initLogger()
+
 	logrus.Info("Starting application")
 
-	// Загружаем .env файл с параметрами приложения
-	err := godotenv.Load()
-	if err != nil {
-		logrus.Fatalf("Error loadong env variables: %s", err.Error())
-	}
-	logrus.Info("Env variables loaded successfully")
-
-	// Инициализируем новое подключение к базе данных и передаем в него параметры из .env
-	db, err := repository.NewPostgresDB(config.ConfigDB{
-		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
-		Username: os.Getenv("DB_USERNAME"),
-		DBName:   os.Getenv("DB_NAME"),
-		SSLMode:  os.Getenv("DB_SSLMODE"),
-		Password: os.Getenv("DB_PASSWORD"),
-	})
+	// Инициализируем новое подключение к базе данных
+	db, err := connections.NewDbConnection()
 	if err != nil {
 		logrus.Fatalf("Failed to initialize db: %s", err.Error())
 	}
+	defer db.Close()
 
 	// Запускаем миграции при старте приложения
 	runMigrations(db)
 
-	// Инициализация зависимостей
-	repo := repository.NewSongPostgres(db)                   // Слой репозитория
-	restClient := client.NewRestClient(os.Getenv("API_URL")) // Создаем новый REST клиент для запроса на внешний API
-	handler := handlers.NewHandler(repo, restClient)         // Обработчики
+	// Инициализация сервиса обрабочиков
+	handlerService := handlers.NewHandlerService(
+		storage.NewStorageFacade(db),
+		client.NewRestClient(),
+	)
 
 	// Инициализируем структуру сервера
-	srv := new(server.Server)
+	srv := http.Server{
+		Addr:           "localhost:8005",            // Server address
+		Handler:        setupRouter(handlerService), // Handler
+		MaxHeaderBytes: 1 << 20,                     // 1 MB
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+	}
 
 	// Запускаем сервер в отдельной горутине
-	logrus.Info("Starting server...")
 	go func() {
-		err := srv.Run(os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"), handler.InitRoutes())
-		if err != nil && err != http.ErrServerClosed {
-			logrus.Fatalf("Failed to run server: %s", err.Error())
+		logrus.Infof("Starting server on %s", srv.Addr)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logrus.WithError(err).Fatal("Server stopped")
 		}
 	}()
 	logrus.Info("Server is running")
@@ -98,20 +118,13 @@ func main() {
 
 	logrus.Info("Server shutting down...")
 
-	err = srv.Shutdown(context.Background())
+	ctx, ctxCancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer ctxCancel()
+
+	err = srv.Shutdown(ctx)
 	if err != nil {
-		logrus.Errorf("Error occured on server shutting down: %s", err.Error())
+		logrus.Errorf("Error occured on srv shutting down: %s", err.Error())
 	}
 
-	logrus.Info("Server gracefully shuted down")
-
-	// Закрываем подключение к бд
-	logrus.Info("Closing connection to Data Base...")
-	err = db.Close()
-	if err != nil {
-		logrus.Errorf("Error occured on db connection close: %s", err.Error())
-	}
-
-	logrus.Info("Connection to DB is closed")
 	logrus.Info("Exiting application")
 }

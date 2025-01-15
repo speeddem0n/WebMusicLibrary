@@ -20,7 +20,7 @@ import (
 // @Success 200 {array} models.VerseModel "Verses"
 // @Failure 400 {object} errorResponse "Error message"
 // @Failure 500 {object} errorResponse "Error message"
-// @Router /{id} [get]
+// @Router /songs/{id} [get]
 func (h *handlerService) GetSongVerseHandler(c *gin.Context) {
 	logrus.Info("Received request to fetch song text.")
 	// Получаем id песни
