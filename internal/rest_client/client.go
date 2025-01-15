@@ -12,9 +12,7 @@ type RestClient struct {
 }
 
 // Конструктор для REST клиента
-func NewRestClient(addres, port string) *RestClient {
-	// Строим адрес для REST клиента
-	baseURL := addres + ":" + port
+func NewRestClient(baseURL string) *RestClient {
 
 	// Создаем новый REST клиент по адресу baseURL
 	client := resty.New().SetBaseURL(baseURL).
