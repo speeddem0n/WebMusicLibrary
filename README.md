@@ -10,8 +10,7 @@
 ### Шаги установки
 1. Склонируйте репозиторий:
 ```bash
-git clone https://github.com/speeddem0n/WebMusicLibrary
-cd WebMusicLibrary
+git clone https://github.com/speeddem0n/WebMusicLibrary && cd WebMusicLibrary
 ```
 2. Настройте .env файл:
    Создайте файл .env в корневой директории проекта и укажите следующие параметры:
@@ -20,7 +19,6 @@ cd WebMusicLibrary
 
 | Переменная       | Описание                                          | Пример значения           |
 |------------------|--------------------------------------------------|---------------------------|
-| SERVER_HOST    | Адрес сервера                                   | localhost               |
 | SERVER_PORT    | Порт сервера                                    | 8000                    |
 | DB_HOST        | Адрес хоста базы данных                         | localhost               |
 | DB_PORT        | Порт для подключения к базе данных              | 5432                    |
@@ -33,7 +31,6 @@ cd WebMusicLibrary
 ### Пример .env файла
 
 ```dotenv
-SERVER_HOST = localhost
 SERVER_PORT = 8000
 DB_HOST = localhost
 DB_PORT = 5438
@@ -41,8 +38,7 @@ DB_USERNAME = postgres
 DB_NAME = songlib
 DB_PASSWORD = postgres
 DB_SSLMODE = disable
-API_URL = localhost
-API_PORT = 8080
+API_URL = http://localhost:8080
 ```
 
 3. Установите зависимости:
@@ -96,19 +92,19 @@ go run cmd/main.go
 ## Примеры API запросов
 
 ### Получение списка песен
-GET /
+GET songs/list
 ```http
 GET http://localhost:8000/?page=1&pageSize=4&group=Muse
 ```
 
 ### Получение текста песни
-GET /:id
+GET songs/:id
 ```http
 GET http://localhost:8080/1?page=1&pageSize=5
 ```
 
 ### Добавление новой песни
-POST /
+POST songs/
 ```http
 POST http://localhost:8000/
 Content-Type: application/json
@@ -120,7 +116,7 @@ Content-Type: application/json
 ```
 
 ### Изменение песни
-PUT /:id
+PUT songs/:id
 ```http
 PUT http://localhost:8000/1
 Content-Type: application/json
@@ -131,7 +127,7 @@ Content-Type: application/json
 ```
 
 ## Удаление песни
-DELETE /:id
+DELETE songs/:id
 ```http
 DELETE http://localhost:8000/1
 ```

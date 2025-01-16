@@ -4,10 +4,10 @@ package client
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/speeddem0n/WebMusicLibrary/internal/config"
 )
 
 // Интерфейс для связи обработчиков с REST клиетом
@@ -23,7 +23,7 @@ type httpClient struct {
 func NewRestClient() RestClient {
 
 	// Создаем новый REST клиент по адресу baseURL
-	client := resty.New().SetBaseURL(config.Conf.ExternalClientUrl).
+	client := resty.New().SetBaseURL(os.Getenv("API_URL")).
 		SetRetryCount(3).
 		SetHeader("Content-type", "application/json").
 		OnBeforeRequest(func(client *resty.Client, req *resty.Request) error {

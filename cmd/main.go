@@ -10,13 +10,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
 	"github.com/sirupsen/logrus"
 
 	_ "github.com/speeddem0n/WebMusicLibrary/docs"
 	client "github.com/speeddem0n/WebMusicLibrary/internal/clients"
-	"github.com/speeddem0n/WebMusicLibrary/internal/config"
 	"github.com/speeddem0n/WebMusicLibrary/internal/connections"
 	"github.com/speeddem0n/WebMusicLibrary/internal/handlers"
 	"github.com/speeddem0n/WebMusicLibrary/internal/storage"
@@ -31,12 +31,12 @@ func initLogger() {
 		FullTimestamp: true,
 	})
 	logrus.SetOutput(os.Stdout)
-	logrus.SetLevel(config.Conf.LogLvl)
+	logrus.SetLevel(logrus.DebugLevel)
 }
 
 // Функция для запуска миграций
 func runMigrations(db *sqlx.DB) {
-	migrationsDir := "./migrations" // Путь к папке с миграциями
+	migrationsDir := "./scripts/migrations" // Путь к папке с миграциями
 
 	logrus.Info("Running database migrations...")
 	if err := goose.Up(db.DB, migrationsDir); err != nil {
@@ -70,7 +70,10 @@ func setupRouter(h handlers.HandlerService) *gin.Engine {
 // @BasePath /
 func main() {
 	// Загружаем config конфиг приложения
-	config.Init()
+	err := godotenv.Load()
+	if err != nil {
+		logrus.Fatalf("Error on loading env file: %v", err)
+	}
 
 	// Инициализируем параметры логера
 	initLogger()
@@ -95,9 +98,9 @@ func main() {
 
 	// Инициализируем структуру сервера
 	srv := http.Server{
-		Addr:           "localhost:8005",            // Server address
-		Handler:        setupRouter(handlerService), // Handler
-		MaxHeaderBytes: 1 << 20,                     // 1 MB
+		Addr:           "localhost:" + os.Getenv("SERVER_PORT"), // Server address
+		Handler:        setupRouter(handlerService),             // Handler
+		MaxHeaderBytes: 1 << 20,                                 // 1 MB
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 	}

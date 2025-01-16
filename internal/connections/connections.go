@@ -2,14 +2,14 @@ package connections
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/speeddem0n/WebMusicLibrary/internal/config"
 )
 
 func NewDbConnection() (*sqlx.DB, error) {
 	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		config.Conf.DbHost, config.Conf.DbPort, config.Conf.DbUsername, config.Conf.DbPass, config.DbName, configureSsl()))
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_SSLMODE")))
 	if err != nil {
 		return nil, err
 	}
@@ -21,12 +21,4 @@ func NewDbConnection() (*sqlx.DB, error) {
 	}
 
 	return db, nil // Возвращаем *sqlx.DB
-}
-
-func configureSsl() string {
-	if config.Conf.DbSsl {
-		return "enable"
-	}
-
-	return "disable"
 }
