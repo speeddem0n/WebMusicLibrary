@@ -94,19 +94,19 @@ go run cmd/main.go
 ### Получение списка песен
 GET songs/list
 ```http
-GET http://localhost:8000/?page=1&pageSize=4&group=Muse
+GET http://localhost:8000/songs?page=1&pageSize=4&group=Muse
 ```
 
 ### Получение текста песни
 GET songs/:id
 ```http
-GET http://localhost:8080/1?page=1&pageSize=5
+GET http://localhost:8080/songs/1?page=1&pageSize=5
 ```
 
 ### Добавление новой песни
 POST songs/
 ```http
-POST http://localhost:8000/
+POST http://localhost:8000/songs/
 Content-Type: application/json
 
 {
@@ -118,7 +118,7 @@ Content-Type: application/json
 ### Изменение песни
 PUT songs/:id
 ```http
-PUT http://localhost:8000/1
+PUT http://localhost:8000/songs/1
 Content-Type: application/json
 
 {
@@ -129,7 +129,7 @@ Content-Type: application/json
 ## Удаление песни
 DELETE songs/:id
 ```http
-DELETE http://localhost:8000/1
+DELETE http://localhost:8000/songs/1
 ```
 
 ---
