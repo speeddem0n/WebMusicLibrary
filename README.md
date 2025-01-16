@@ -91,19 +91,19 @@ go run cmd/main.go
 ## Примеры API запросов
 
 ### Получение списка песен
-GET songs/list
+GET /songs/list
 ```http
 GET http://localhost:8000/songs/list?page=1&pageSize=4&group=Muse
 ```
 
 ### Получение текста песни
-GET songs/:id
+GET /songs/:id
 ```http
 GET http://localhost:8080/songs/1?page=1&pageSize=5
 ```
 
 ### Добавление новой песни
-POST songs/
+POST /songs
 ```http
 POST http://localhost:8000/songs
 Content-Type: application/json
@@ -115,7 +115,7 @@ Content-Type: application/json
 ```
 
 ### Изменение песни
-PUT songs/:id
+PUT /songs/:id
 ```http
 PUT http://localhost:8000/songs/1
 Content-Type: application/json
@@ -126,7 +126,7 @@ Content-Type: application/json
 ```
 
 ## Удаление песни
-DELETE songs/:id
+DELETE /songs/:id
 ```http
 DELETE http://localhost:8000/songs/1
 ```
