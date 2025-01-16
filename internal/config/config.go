@@ -19,6 +19,7 @@ type config struct {
 	DbPort            string
 	DbUsername        string
 	DbPass            string
+	DbName            string
 	DbSsl             bool
 	ExternalClientUrl string
 	LogLvl            logrus.Level
@@ -34,6 +35,7 @@ func Init() {
 	flag.StringVar(&Conf.DbPort, "db-port", "5437", "database port")
 	flag.StringVar(&Conf.DbUsername, "db-username", "postgres", "database username")
 	flag.StringVar(&Conf.DbPass, "db-pass", "postgres", "database password")
+	flag.StringVar(&Conf.DbName, "db-name", "music_lib", "database name")
 	flag.BoolVar(&Conf.DbSsl, "db-ssl", false, "enables ssl mode")
 	flag.StringVar(&Conf.DbPass, "external-url", "http://localhost:8080", "external api client irl")
 	logLevel := flag.String("log-lvl", "debug", "logger message level")

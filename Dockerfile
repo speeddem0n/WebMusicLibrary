@@ -25,4 +25,4 @@ COPY ./build/entrypoint.sh /entrypoint.sh
 COPY ./scripts/migrations /migrations
 RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/build/entrypoint.sh"]

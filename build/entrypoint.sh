@@ -26,17 +26,20 @@ fi
 if [ ! -z ${DB_PORT} ]; then
   CMD_ARGS="${CMD_ARGS} -db-port ${DB_PORT}"
 fi
-if [ ! -z ${DB_USERNAME} ]; then
-  CMD_ARGS="${CMD_ARGS} -db-username ${DB_USERNAME}"
+if [ ! -z ${POSTGRES_USER} ]; then
+  CMD_ARGS="${CMD_ARGS} -db-username ${POSTGRES_USER}"
 fi
-if [ ! -z ${DB_PASSWORD} ]; then
-  CMD_ARGS="${CMD_ARGS} -db-password ${DB_PASSWORD}"
+if [ ! -z ${POSTGRES_PASSWORD} ]; then
+  CMD_ARGS="${CMD_ARGS} -db-pass ${POSTGRES_PASSWORD}"
+fi
+if [ ! -z ${POSTGRES_DB} ]; then
+  CMD_ARGS="${CMD_ARGS} -db-name ${POSTGRES_DB}"
 fi
 if [ ! -z ${DB_SSL} ]; then
   CMD_ARGS="${CMD_ARGS} -db-ssl ${DB_SSL}"
 fi
 if [ ! -z ${API_URL} ]; then
-  CMD_ARGS="${CMD_ARGS} -api_url ${API_URL}"
+  CMD_ARGS="${CMD_ARGS} -external-url ${API_URL}"
 fi
 if [ ! -z ${LOG_LVL} ]; then
   CMD_ARGS="${CMD_ARGS} -log-lvl ${LOG_LVL}"
