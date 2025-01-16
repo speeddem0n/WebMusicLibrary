@@ -94,7 +94,7 @@ go run cmd/main.go
 ### Получение списка песен
 GET songs/list
 ```http
-GET http://localhost:8000/songs?page=1&pageSize=4&group=Muse
+GET http://localhost:8000/songs/list?page=1&pageSize=4&group=Muse
 ```
 
 ### Получение текста песни
@@ -106,7 +106,7 @@ GET http://localhost:8080/songs/1?page=1&pageSize=5
 ### Добавление новой песни
 POST songs/
 ```http
-POST http://localhost:8000/songs/
+POST http://localhost:8000/songs
 Content-Type: application/json
 
 {
